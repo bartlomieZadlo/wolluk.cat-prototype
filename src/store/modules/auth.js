@@ -3,7 +3,8 @@ import router from '@/router'
 const state = {
   user: null,
   error: null,
-  loading: false
+  loading: false,
+  emailUnique: true
 }
 
 const mutations = {
@@ -15,6 +16,9 @@ const mutations = {
   },
   setLoading (state, payload) {
     state.loading = payload
+  },
+  setEmailUnique (state, payload){
+    state.emailUnique = payload
   }
 }
 
@@ -23,13 +27,21 @@ const getters = {
     return state.user !== null && state.user !== undefined
   }
 }
+
 const actions = {
   userSignUp ({commit}, payload) {
-    // Add user to /users
-    commit('setUser', { email: payload.email })
+    for (let user of payload.users.usersList) {
+      if (payload.email === user.email) {
+        router.push('/signup')
+        commit('setEmailUnique', false)
+        return false
+      }
+    }
+    commit('setUser', {email: payload.email, password: payload.password})
+    commit('setEmailUnique', true)
+    commit('setLoading', true)
+    return true
     // rootState.// verify from /users/
-    router.push('/home')
-    // commit('setLoading', true)
     // rootState.// verify from /users/
     // firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
     // .then(firebaseUser => {
@@ -44,7 +56,7 @@ const actions = {
   },
   userSignIn ({commit}, payload) {
     // commit('setLoading', true)
-    commit('setUser', { email: payload.email })
+    commit('setUser', { email: payload.email})
     router.push('/home')
     // firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
     // .then(firebaseUser => {
