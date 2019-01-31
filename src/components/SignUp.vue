@@ -16,6 +16,8 @@
               v-btn(color='primary', type='submit', :disabled="loading") Sign Up
             v-flex
               v-alert(type='error', dismissible='', v-model='alert') {{ error }}
+            v-flex(v-if="!emailUnique")
+              h1 Email already taken
 </template>
 
 
@@ -38,6 +40,9 @@ export default {
     },
     loading () {
       return this.$store.state.loading
+    },
+    emailUnique () {
+      return this.$store.state.auth.emailUnique
     }
   },
   methods: {
@@ -45,7 +50,9 @@ export default {
       if (this.comparePasswords !== true) {
         return
       }
-      this.$store.dispatch('auth/userSignUp', { email: this.email, password: this.password })
+      let ver = this.$store.dispatch('auth/userSignUp', {email: this.email, password: this.password, users: this.$store.state.users})
+      ver.then(
+        this.$store.dispatch('users/addUserToStorage', {email: this.email, password: this.password, emailUnique: this.$store.state.auth.emailUnique}))
     }
   },
   watch: {
