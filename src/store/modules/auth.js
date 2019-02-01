@@ -29,17 +29,20 @@ const getters = {
 }
 
 const actions = {
-  userSignUp ({commit}, payload) {
-    for (let user of payload.users.usersList) {
+  userSignUp ({commit, rootGetters}, payload) {
+    commit('setLoading', true)
+    let usersList = rootGetters['users/getUsers']
+    for (let user of usersList) {
       if (payload.email === user.email) {
         router.push('/signup')
         commit('setEmailUnique', false)
+        commit('setError', 'Email already exists in records')
         return false
       }
     }
     commit('setUser', {email: payload.email, password: payload.password})
     commit('setEmailUnique', true)
-    commit('setLoading', true)
+    commit('setLoading', false)
     return true
     // rootState.// verify from /users/
     // rootState.// verify from /users/
@@ -54,10 +57,20 @@ const actions = {
     //   commit('setLoading', false)
     // })
   },
-  userSignIn ({commit}, payload) {
-    // commit('setLoading', true)
-    commit('setUser', { email: payload.email})
-    router.push('/home')
+  userSignIn ({commit, rootGetters}, payload){
+    commit('setLoading', true)
+    console.log(rootGetters['users/getUsers'])
+    let userList = rootGetters['users/getUsers']
+    for (let user of userList) {
+      if (payload.email === user.email && payload.password === user.password) {
+        commit('setUser', {email: payload.email})
+        router.push('/home')
+        return true
+      }
+    }
+    commit('setLoading', false)
+    commit('setError', 'Wrong Credentials')
+    router.push('/signin')
     // firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
     // .then(firebaseUser => {
     //   commit('setUser', {email: firebaseUser.user.email})
