@@ -5,11 +5,13 @@ const state = {
   usersList: []
 }
 const getters = {
-
+  getUsers (state) {
+    return state.usersList
+  }
 }
 const actions = {
   addUserToStorage ({commit}, payload) {
-    if (payload.emailUnique){
+    if (payload.emailUnique) {
       let user = new User(payload)
       commit('addUser', user)
       router.push('/home')
