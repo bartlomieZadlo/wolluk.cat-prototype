@@ -45,9 +45,7 @@ export default {
       if (this.comparePasswords !== true) {
         return
       }
-      let ver = this.$store.dispatch('auth/userSignUp', {email: this.email, password: this.password})
-      ver.then(
-        this.$store.dispatch('users/addUserToStorage', {email: this.email, password: this.password, emailUnique: this.$store.state.auth.emailUnique}))
+      this.$store.dispatch('auth/userSignUp', {email: this.email, password: this.password})
     }
   },
   watch: {

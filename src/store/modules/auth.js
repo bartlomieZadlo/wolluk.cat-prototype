@@ -3,8 +3,7 @@ import router from '@/router'
 const state = {
   user: null,
   error: null,
-  loading: false,
-  emailUnique: true
+  loading: false
 }
 
 const mutations = {
@@ -16,9 +15,6 @@ const mutations = {
   },
   setLoading (state, payload) {
     state.loading = payload
-  },
-  setEmailUnique (state, payload){
-    state.emailUnique = payload
   }
 }
 
@@ -29,21 +25,20 @@ const getters = {
 }
 
 const actions = {
-  userSignUp ({commit, rootGetters}, payload) {
+  userSignUp ({commit, rootGetters, dispatch}, payload) {
     commit('setLoading', true)
     let usersList = rootGetters['users/getUsers']
     for (let user of usersList) {
       if (payload.email === user.email) {
         router.push('/signup')
-        commit('setEmailUnique', false)
         commit('setError', 'Email already exists in records')
-        return false
+        return
       }
     }
     commit('setUser', {email: payload.email, password: payload.password})
-    commit('setEmailUnique', true)
     commit('setLoading', false)
-    return true
+    dispatch('users/addUserToStorage', payload, {root: true})
+    router.push('/home')
     // rootState.// verify from /users/
     // rootState.// verify from /users/
     // firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
@@ -57,7 +52,7 @@ const actions = {
     //   commit('setLoading', false)
     // })
   },
-  userSignIn ({commit, rootGetters}, payload){
+  userSignIn ({commit, rootGetters}, payload) {
     commit('setLoading', true)
     console.log(rootGetters['users/getUsers'])
     let userList = rootGetters['users/getUsers']
